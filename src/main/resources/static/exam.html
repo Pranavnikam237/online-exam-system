@@ -1,0 +1,205 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Online Exam</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body class="exam-body">
+
+<div class="exam-container">
+
+    <div class="exam-header">
+
+        <h1>Online Examination</h1>
+
+
+        <div class="timer">
+            <span id="timer">10:00</span>
+        </div>
+
+    </div>
+
+    <div class="progress-container">
+        <div class="progress-bar" id="progressBar"></div>
+    </div>
+
+    <div id="questionsContainer"></div>
+
+    <button id="submitBtn"
+            class="submit-btn"
+            onclick="submitExam()">
+        Submit Exam
+    </button>
+
+    <div id="resultBox"></div>
+
+</div>
+
+<script>
+
+    let questions = [];
+
+    fetch("http://localhost:8080/questions")
+        .then(response => response.json())
+        .then(data => {
+
+            questions = data;
+
+            displayQuestions();
+
+        })
+        .catch(error => {
+
+            console.error(error);
+
+            alert("Unable to load questions");
+
+        });
+
+    function displayQuestions() {
+
+        let html = "";
+
+        questions.forEach((q, index) => {
+
+            html += `
+        <div class="question-card">
+
+            <h3>Question ${index + 1}</h3>
+
+            <p>${q.questionTitle}</p>
+
+            <label class="option">
+                <input type="radio"
+                       name="q${q.id}"
+                       value="${q.optionA}">
+                ${q.optionA}
+            </label>
+
+            <label class="option">
+                <input type="radio"
+                       name="q${q.id}"
+                       value="${q.optionB}">
+                ${q.optionB}
+            </label>
+
+            <label class="option">
+                <input type="radio"
+                       name="q${q.id}"
+                       value="${q.optionC}">
+                ${q.optionC}
+            </label>
+
+            <label class="option">
+                <input type="radio"
+                       name="q${q.id}"
+                       value="${q.optionD}">
+                ${q.optionD}
+            </label>
+
+        </div>
+        `;
+        });
+
+        document.getElementById("questionsContainer").innerHTML = html;
+    }
+
+    let totalSeconds = 600;
+
+    const timer = setInterval(() => {
+
+        let minutes = Math.floor(totalSeconds / 60);
+        let seconds = totalSeconds % 60;
+
+        document.getElementById("timer").innerText =
+            minutes + ":" +
+            (seconds < 10 ? "0" : "") + seconds;
+
+        totalSeconds--;
+
+        if (totalSeconds < 0) {
+
+            clearInterval(timer);
+
+            alert("Time Up! Exam Submitted");
+
+            submitExam();
+        }
+
+    }, 1000);
+
+
+    function submitExam() {
+
+        document.getElementById("submitBtn").disabled = true;
+
+        let answers = [];
+
+        questions.forEach(q => {
+
+            let selected =
+                document.querySelector(
+                    `input[name="q${q.id}"]:checked`
+                );
+
+            if (selected) {
+
+                answers.push({
+
+                    questionId: q.id,
+
+                    selectedAnswer: selected.value
+
+                });
+            }
+        });
+
+        const requestBody = {
+
+            studentName:
+                localStorage.getItem("studentName"),
+
+            studentEmail:
+                localStorage.getItem("studentEmail"),
+
+            answers: answers
+        };
+
+        console.log("Sending Data:", requestBody);
+
+        fetch("http://localhost:8080/exam/submit", {
+
+            method: "POST",
+
+            headers: {
+                "Content-Type": "application/json"
+            },
+
+            body: JSON.stringify(requestBody)
+
+        })
+            .then(response => response.text())
+            .then(data => {
+
+                console.log("Server Response:", data);
+
+                localStorage.setItem("score", data);
+
+                window.location.href = "result.html";
+
+            })
+            .catch(error => {
+
+                console.error(error);
+
+                alert("Submission Failed");
+
+                document.getElementById("submitBtn").disabled = false;
+            });
+    }
+
+</script>
+</body>
+</html>

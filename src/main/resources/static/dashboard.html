@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body class="dashboard-body">
+
+<div class="dashboard-container">
+
+    <div class="header">
+
+        <h1>🎓 Online Examination System</h1>
+
+        <div class="profile">
+            👤 <span id="studentName">Student</span>
+        </div>
+
+    </div>
+
+    <div class="welcome-card">
+        <h2>Welcome Back</h2>
+        <p>Ready to test your knowledge today?</p>
+    </div>
+
+    <div class="card-grid">
+
+        <div class="dashboard-card" onclick="goToExam()">
+            <div class="icon">📝</div>
+            <h3>Take Exam</h3>
+            <p>Start your online examination.</p>
+        </div>
+
+        <div class="dashboard-card" onclick="goToLeaderboard()">
+            <div class="icon">🏆</div>
+            <h3>Leaderboard</h3>
+            <p>Check top student rankings.</p>
+        </div>
+
+        <div class="dashboard-card" onclick="viewResults()">
+            <div class="icon">📊</div>
+            <h3>View Results</h3>
+            <p>See your previous scores.</p>
+        </div>
+
+        <div class="dashboard-card logout-card" onclick="logout()">
+            <div class="icon">🚪</div>
+            <h3>Logout</h3>
+            <p>Exit your account safely.</p>
+        </div>
+
+    </div>
+
+</div>
+<script>
+
+    document.getElementById("studentName").innerText =
+        localStorage.getItem("studentName") || "Student";
+
+    function goToExam() {
+        window.location.href = "exam.html";
+    }
+
+    function goToLeaderboard() {
+        window.location.href = "leaderboard.html";
+    }
+
+    function viewResults() {
+        alert("Results Page Coming Next");
+    }
+
+    function logout() {
+
+        localStorage.clear();
+
+        window.location.href = "login.html";
+    }
+
+</script>
+</body>
+</html>

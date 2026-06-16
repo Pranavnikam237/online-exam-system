@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>My Result</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body class="dashboard-body">
+
+<div class="dashboard-container">
+
+    <h1>Exam Result</h1>
+
+    <div id="resultContainer"></div>
+    <button class="home-btn" onclick="goHome()">
+        Home
+    </button>
+
+</div>
+
+<script>
+
+    const email = localStorage.getItem("studentEmail");
+
+    fetch(`http://localhost:8080/exam/result/${email}`)
+        .then(response => response.json())
+        .then(data => {
+
+            let latestResult = data[data.length - 1];
+
+            document.getElementById("resultContainer").innerHTML = `
+
+        <div class="result-card">
+
+
+
+            <h1>Score: ${latestResult.score}</h1>
+
+            <p>Email: ${latestResult.studentEmail}</p>
+
+            <p>Exam Date: ${latestResult.examDate}</p>
+
+        </div>
+
+    `;
+
+        })
+        .catch(error => {
+
+            console.error(error);
+
+            alert("Unable to load result");
+
+        });
+    function goHome(){
+
+        window.location.href = "dashboard.html";
+    }
+</script>
+
+</body>
+</html>
